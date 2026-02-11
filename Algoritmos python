@@ -7722,3 +7722,184 @@ if "__main__" == __name__:
     resultado = sudoku(matriz)
     
     print(resultado)
+
+#Los siguientes ejercicios se pueden hacer de manera más óptima, pero con encontrar una solución ya estoy satisfecho
+
+#(MUY DIFICIL) Ejercicio de contar el número de bloques de agua de lluvia, es un ejercicio hard de leetcode
+
+def gotas_agua(array):
+    
+    total_agua = 0
+    #Hacemos un set por si acaso ya contamos esos agujeros de un lado no contarlos de nuevo
+    posiciones_vistas = set()
+    
+    #Funcion que cuenta el número de bloques de agua cuando se detecta un agujero
+    def recuento(indice1, indice2, array):#7, 8, array
+        
+        total_agua_almacenada = 0#
+        altura_inicial = array[indice1]#2
+        for i in range(indice1 + 1, indice2):#9
+            if i not in posiciones_vistas:
+                agua_almacenada = altura_inicial - array[i]
+                posiciones_vistas.add(i)
+                if agua_almacenada < 0:
+                    continue
+                
+                total_agua_almacenada += agua_almacenada
+        
+        return total_agua_almacenada
+    
+    #Funciones que miran de ambos lados para no perderse de ningún agujero
+    
+    def izquierda_a_derecha(array):
+        
+        nonlocal total_agua
+        
+        i, j = 0, 0#1, 2
+        altura_izquierda = array[i]#3
+        
+        while j < len(array):
+            
+            #Si el primer valor es 0, sumamos a los indices hasta encontrar un muro
+            if array[i] == 0:
+                i += 1
+                j = i + 1
+                altura_izquierda = array[i]
+                continue
+            
+            altura_derecha = array[j]#2
+            if altura_derecha >= altura_izquierda:
+                total_agua += recuento(i, j, array)
+                i = j
+                j = i + 1
+                altura_izquierda = array[i]
+            else:
+                j += 1
+        
+        return
+    
+    def derecha_a_izquierda(array):
+        
+        nonlocal total_agua
+        
+        i, j = len(array) - 1, len(array) - 2#10, 9
+        
+        altura_derecha = array[i]#0
+        
+        while j >= 0:
+            
+            #Si el primer valor es 0, sumamos a los indices hasta encontrar un muro
+            if array[i] == 0:
+                i -= 1
+                j = i - 1
+                continue
+            
+            altura_izquierda = array[j]#3
+            if altura_izquierda >= altura_derecha:
+                total_agua += recuento(j, i, array)
+                i = j
+                j = i - 1
+                altura_derecha = array[i]
+            else:
+                j -= 1
+        
+        return
+    
+    #Ejecutamos los 2 lados y luego devolvemos el total de bloques de agua que hay
+    izquierda_a_derecha(array)
+    derecha_a_izquierda(array)
+    
+    return total_agua
+
+
+if "__main__" == __name__:
+    
+    array = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]
+    resultado = gotas_agua(array)
+    
+    print(resultado)
+
+#(MUY DIFICIL) Ejercicio de encontrar el rectangulo más grande expandiendo, es un ejercicio hard de leetcode
+
+def rectangulos(array):
+    
+    maximo_rectangulo = 0#6
+    
+    def expandir_rectangulo(indice, array):#2, array
+        
+        #El rectangulo total tiene un valor minimo del propio rectangulo
+        altura_actual = array[indice]#5
+        rectangulo_total = altura_actual#5
+
+        #Si el indice están en el limite entonces o no podrá tener indice izq o der
+        if indice != 0:
+            indice_izquierdo = indice - 1
+        else:
+            indice_izquierdo = -1
+        
+        if indice != len(array) - 1:
+            indice_derecho = indice + 1
+        else:
+            indice_derecho = len(array)
+        
+        #Mientras no se acaben las expansiones, seguimos expandiendo
+        while indice_izquierdo > 0 or indice_derecho < len(array) - 1:#-1, 3
+            
+            #Si en algún momento el rectangulo de algún lado no es mayor o igual entonces hacemos que el índice se salte del límite para que termine de expandir
+            if indice_izquierdo >= 0:
+                if array[indice_izquierdo] >= altura_actual:
+                    rectangulo_total += altura_actual
+                    indice_izquierdo -= 1
+                else:
+                    indice_izquierdo = -1
+            
+            if indice_derecho <= len(array) - 1:
+                if array[indice_derecho] >= altura_actual:
+                    rectangulo_total += altura_actual
+                    indice_derecho += 1
+                else:
+                    indice_derecho = len(array)
+        
+        return rectangulo_total
+    
+    #Hacemos un bucle para conseguir el mayor rectángulo posible expandiendo cada uno
+    for i in range(len(array)):
+        rectangulo_calculado = expandir_rectangulo(i, array)
+        if rectangulo_calculado > maximo_rectangulo:
+            maximo_rectangulo = rectangulo_calculado
+    
+    return maximo_rectangulo
+
+
+if "__main__" == __name__:
+    
+    array = [2, 1, 5, 6, 2, 3]
+    resultado = rectangulos(array)
+    
+    print(resultado)
+
+#Ejercicio de encontrar el contenedor de agua más grande, es un ejercicio medio de leetcode
+
+def cuadrados_agua(array):
+    
+    maxima_area = 0#0
+    j = len(array) - 1#8
+    
+    while j >= 0:
+        
+        for i in range(0, j):#0-7
+            area_actual = abs(i - j) * min(array[i], array[j])
+            if area_actual > maxima_area:
+                maxima_area = area_actual
+        
+        j -= 1
+    
+    return maxima_area
+
+
+if "__main__" == __name__:
+    
+    array = [1, 8, 6, 2, 5, 4, 8, 3, 7]
+    resultado = cuadrados_agua(array)
+    
+    print(resultado)
