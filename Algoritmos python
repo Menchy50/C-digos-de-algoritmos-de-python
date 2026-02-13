@@ -7903,3 +7903,78 @@ if "__main__" == __name__:
     resultado = cuadrados_agua(array)
     
     print(resultado)
+
+#(MUY DIFICIL) Ejercicio de encontrar la substring más pequeña de s que tenga todas las letras de la string t, es un ejercicio hard de leetcode
+
+class Queue:
+    def __init__(self):
+        self.items = []
+
+    def isEmpty(self):
+        return self.items == []
+
+    def enqueue(self, item):
+        self.items.insert(0,item)
+
+    def dequeue(self):
+        return self.items.pop()
+    
+    def belong(self, item):
+        return item in self.items
+
+    def size(self):
+        return len(self.items)
+
+def window_string(s, t):
+    
+    listas_substrings = []#[BCA]
+    
+    def ordenacion_longitudes(listas_substrings, elemento):
+        
+        if len(listas_substrings) == 0:
+            listas_substrings.append(elemento)
+            return
+        
+        if len(listas_substrings) == 1 and len(elemento) < len(listas_substrings[0]):
+            listas_substrings[0] = elemento
+            return
+    
+    if len(s) == 0:
+        return ""
+    
+    cola = Queue()#[(C, 4)(ANC, 4), (BANC, 4)]
+    
+    i = 0
+        
+    cola.enqueue((s[i], i + 1))#
+        
+    while cola.isEmpty() != True:
+                
+        letra_actual = cola.dequeue()#(BANC, 4)
+            
+        letra_actualmente = letra_actual[0]#BANC
+            
+        letra_a_mirar = letra_actualmente[-1]#C
+            
+        if letra_a_mirar in t and len(letra_actualmente) != 1:
+            if not cola.belong((letra_a_mirar, i)):
+                cola.enqueue((letra_a_mirar, i + 1))
+            
+        if all(letra in letra_actualmente for letra in t):
+            ordenacion_longitudes(listas_substrings, letra_actualmente)
+            continue
+        
+        i = letra_actual[1]
+         
+        if i < len(s):
+            añadir = letra_actual[0] + s[i]
+            cola.enqueue((añadir, i + 1))
+    
+    return listas_substrings[0]
+
+
+if "__main__" == __name__:
+    
+    resultado = window_string("ADOBECODEBANC", "ABC")
+    
+    print(resultado)
