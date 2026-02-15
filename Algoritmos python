@@ -7906,6 +7906,8 @@ if "__main__" == __name__:
 
 #(MUY DIFICIL) Ejercicio de encontrar la substring más pequeña de s que tenga todas las letras de la string t, es un ejercicio hard de leetcode
 
+from collections import Counter
+
 class Queue:
     def __init__(self):
         self.items = []
@@ -7927,17 +7929,18 @@ class Queue:
 
 def window_string(s, t):
     
-    listas_substrings = []#[BCA]
+    substring_minima = ""
     
-    def ordenacion_longitudes(listas_substrings, elemento):
+    def comprobar_string(string, t):
         
-        if len(listas_substrings) == 0:
-            listas_substrings.append(elemento)
-            return
+        conteo_string = Counter(string)
+        conteo_t = Counter(t)
         
-        if len(listas_substrings) == 1 and len(elemento) < len(listas_substrings[0]):
-            listas_substrings[0] = elemento
-            return
+        for letra, cantidad in conteo_t.items():
+            if conteo_string[letra] < cantidad:
+                return False
+        
+        return True
     
     if len(s) == 0:
         return ""
@@ -7960,8 +7963,12 @@ def window_string(s, t):
             if not cola.belong((letra_a_mirar, i)):
                 cola.enqueue((letra_a_mirar, i + 1))
             
-        if all(letra in letra_actualmente for letra in t):
-            ordenacion_longitudes(listas_substrings, letra_actualmente)
+        if comprobar_string(letra_actualmente, t):
+            if substring_minima == "":
+                substring_minima = letra_actualmente
+            else:
+                if len(letra_actualmente) < len(substring_minima):
+                    substring_minima = letra_actualmente
             continue
         
         i = letra_actual[1]
@@ -7970,7 +7977,7 @@ def window_string(s, t):
             añadir = letra_actual[0] + s[i]
             cola.enqueue((añadir, i + 1))
     
-    return listas_substrings[0]
+    return substring_minima
 
 
 if "__main__" == __name__:
